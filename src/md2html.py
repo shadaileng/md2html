@@ -50,19 +50,82 @@ def md2html(path):
 		exts = ['markdown.extensions.extra', 'markdown.extensions.codehilite','markdown.extensions.tables','markdown.extensions.toc']
 
 		html = '''<!DOCTYPE html>
-<html lang="zh-cn">
+<html>
 	<head>
-		<meta content="text/html; charset=utf-8" http-equiv="content-type" />
-		<link href="../markdown.css" rel="stylesheet">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>%s</title>
+		<style type="text/css">
+			html, body, * {
+				margin: 0;
+				padding: 0;
+			}
+			#index {
+				position: absolute;
+				width: 100%%;
+			}
+			#content {
+				position: absolute;
+				width: 70%%;
+				left: 25%%;
+			}
+		</style>
+		<link href="../css/zTreeStyle.css" rel="stylesheet">
+		<link href="../css/markdown.css" media="all" rel="stylesheet" type="text/css"/>
+		<script type="text/javascript" src="../js/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.ztree.core-3.5.js"></script>
+		<script type="text/javascript" src="../js/ztree_toc.js"></script>
+		<script type="text/javascript">
+			$(function () {
+				$('#readme').css({
+					// 'width':'70%%',
+					// 'margin-left':'25%%'
+				});
+				$('#tree').ztree_toc({
+					debug:false,
+					is_auto_number:true,
+					documment_selector:'.markdown-body',
+					ztreeStyle: {
+						width:'25%%',
+						overflow: 'auto',
+						position: 'fixed',
+						// 'padding-top': '88px',
+						'z-index': 2147483647,
+						border: '0px none',
+						'border-right': '1px dotted #efefef',
+						left: '0px',
+						top: '0px',
+						// 'overflow-x': 'hidden',
+						'height': $(window).height() + 'px'
+					}
+				});
+
+			});
+
+		</script>
 	</head>
-	<body>
-		%s
+	<body style="width: auto; height: auto;">
+	    <div id="index">
+			<div>
+				<ul id="tree" class="ztree" style='width:100%%'>
+
+				</ul>
+			</div>
+		</div>
+
+		<div id="content">
+			<div id='readme' style='width:70%%; margin-left:10%%;'>
+				<article class='markdown-body'>
+%s
+	</article>
+			</div>
+		</div>
 	</body>
 </html>
 		'''
 		ret = markdown.markdown(text,extensions=exts)
 		with open('./dist/' + os.path.basename(path)[:-2]  + 'html', 'wb') as file:
-			file.write((html % ret).encode('utf-8'))
+			file.write((html % (os.path.basename(path), ret)).encode('utf-8'))
 #		print(html % ret)
 
 _usage = '''

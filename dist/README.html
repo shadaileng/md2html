@@ -1,19 +1,514 @@
 <!DOCTYPE html>
-<html lang="zh-cn">
+<html>
 	<head>
-		<meta content="text/html; charset=utf-8" http-equiv="content-type" />
-		<link href="../markdown.css" rel="stylesheet">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>README.md</title>
+		<style type="text/css">
+			html, body, * {
+				margin: 0;
+				padding: 0;
+			}
+			#index {
+				position: absolute;
+				width: 100%;
+			}
+			#content {
+				position: absolute;
+				width: 70%;
+				left: 25%;
+			}
+		</style>
+		<link href="../css/zTreeStyle.css" rel="stylesheet">
+		<link href="../css/markdown.css" media="all" rel="stylesheet" type="text/css"/>
+		<script type="text/javascript" src="../js/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.ztree.core-3.5.js"></script>
+		<script type="text/javascript" src="../js/ztree_toc.js"></script>
+		<script type="text/javascript">
+			$(function () {
+				$('#readme').css({
+					// 'width':'70%',
+					// 'margin-left':'25%'
+				});
+				$('#tree').ztree_toc({
+					debug:false,
+					is_auto_number:true,
+					documment_selector:'.markdown-body',
+					ztreeStyle: {
+						width:'25%',
+						overflow: 'auto',
+						position: 'fixed',
+						// 'padding-top': '88px',
+						'z-index': 2147483647,
+						border: '0px none',
+						'border-right': '1px dotted #efefef',
+						left: '0px',
+						top: '0px',
+						// 'overflow-x': 'hidden',
+						'height': $(window).height() + 'px'
+					}
+				});
+
+			});
+
+		</script>
 	</head>
-	<body>
-		<h1 id="md2html"><center>md2html</center></h1>
-<h2 id="_1">使用</h2>
-<p>这个程序使用<a href="http://zhangjikai.com/markdown-css">样式</a>作为页面样式。 </p>
-<p><strong>预览该样式</strong><br />
-<a href="dist/README.html">README.html</a>  </p>
-<h2 id="html">导出html</h2>
-<p>使用<code>Python-Markdown</code>在<code>dist</code>文件夹生成<code>HTML</code>文件</p>
-<pre class="codehilite"><code>$ pip3 install markdown
-$ python3 src/md2html.py markdown_file_path</code></pre>
+	<body style="width: auto; height: auto;">
+	    <div id="index">
+			<div>
+				<ul id="tree" class="ztree" style='width:100%'>
+
+				</ul>
+			</div>
+		</div>
+
+		<div id="content">
+			<div id='readme' style='width:70%; margin-left:10%;'>
+				<article class='markdown-body'>
+<h1 id="learnaiohttp">learnaiohttp</h1>
+<blockquote>
+<p>学习官方文档，记录学习笔记 <a href="https://docs.aiohttp.org/en/stable/index.html">Async HTTP client/server for asyncio and Python (官方)</a></p>
+</blockquote>
+<hr />
+<h1 id="_1">安装环境</h1>
+<ol>
+<li>克隆源码</li>
+</ol>
+<pre class="codehilite"><code>$ git clone https://github.com/shadaileng/learnaiohttp.git</code></pre>
+
+
+<ol>
+<li>安装虚拟环境和相关模块</li>
+</ol>
+<pre class="codehilite"><code># 安装virtualenv
+$ sudo pip3 install virtualenv
+# 安装虚拟环境
+$ cd learnaiohttp
+$ virtualenv --no-site-packages venv
+# 进入虚拟环境
+$ . venv/bin/activate
+# 安装相关模块
+(venv) $ pip3 install -r requirements.txt</code></pre>
+
+
+<h1 id="_2">客户端</h1>
+<h2 id="_3">发起请求</h2>
+<pre class="codehilite"><code>import aiohttp, asyncio
+
+async def client():
+    # ClientSession对象创建session会话,用来访问HTTP服务
+    async with aiohttp.ClientSession() as session:
+        # session访问url,服务器返回ClientResponse对象response, response可以得到服务器返回的所有信息
+        async with session.get('http://www.baidu.com') as response:
+            print('status: %s' % response.status)
+            html = await response.text()
+            print(html)</code></pre>
+
+
+<blockquote>
+<p>执行客户端程序，打印返回的结果</p>
+<p><code>ClientSession</code>对象创建session会话,用来访问HTTP服务</p>
+<p><code>session</code>使用<code>get()</code>方法访问服务器, 服务器返回<code>ClientResponse</code>对象<code>response</code>, response可以得到服务器返回的所有信息</p>
+<p><code>session</code>除了<code>get()</code>方法还有其他访问<code>HTTP</code>服务的方法</p>
+</blockquote>
+<pre class="codehilite"><code>session.post(url, data=b'data')
+session.put(url, data=b'data')
+session.patch(url, data=b'data')
+session.head(url)
+session.options(url)</code></pre>
+
+
+<blockquote>
+<p>一般一个客户端应用只需要创建一个<code>session</code>就可以执行所有的请求,或者每个网站创建对应的<code>session</code></p>
+<p>测试</p>
+</blockquote>
+<pre class="codehilite"><code># 启动服务端
+$ python3 src/0001_request.py 0
+# 另一终端发起请求
+$ python3 src/0001_request.py 1
+status: 200
+hello, shadaileng</code></pre>
+
+
+<h2 id="_4">解析参数</h2>
+<blockquote>
+<p><code>get</code>请求<code>URL</code>添加拼接参数可以使用一下两种方法</p>
+</blockquote>
+<ul>
+<li><code>session.get()</code>方法中，请求参数以<code>dict</code>的形式赋值给<code>params</code></li>
+</ul>
+<pre class="codehilite"><code>{'key1': 'val1', 'key2': 'val2'}
+async with session.get('http://localhost:8080/querystring', params=params) as response:
+    expect = 'http://localhost:8080/querystring?key1=val1&amp;key2=val2'
+    print(str(response.url))
+    assert str(response.url) == expect</code></pre>
+
+
+<ul>
+<li><code>session.get()</code>方法中，请求参数以元组数组的形式赋值给<code>params</code>，元组内是请求参数键值。同键不同值的并联字典(<code>MultiDict</code>)可以使用这种方法。</li>
+</ul>
+<pre class="codehilite"><code>params = [('key1', 'val1'), ('key2', 'val2'), ('key2', 'val3')]
+async with session.get('http://localhost:8080/querystring', params=params) as response:
+    expect = 'http://localhost:8080/querystring?key1=val1&amp;key2=val2&amp;key2=val3'
+    print(str(response.url))
+    assert str(response.url) == expect</code></pre>
+
+
+<blockquote>
+<p>aiohttp在发送请求之前内部执行URL规范化。如果请求参数中包含特殊字符，默认情况会被转化成base64编码，不可逆转。</p>
+<p>使用<code>yarl.URL</code>构建<code>url</code>，并添加参数<code>encoded=True</code>禁用URL规范化</p>
+</blockquote>
+<pre class="codehilite"><code>from yarl import URL
+async with session.get(URL('http://localhost:8080/querystring?key+1=val', encoded=True)) as response:
+    expect = 'http://localhost:8080/querystring?key+1=val'
+    print(str(response.url))
+    assert str(response.url) == expect</code></pre>
+
+
+<blockquote>
+<p>测试</p>
+</blockquote>
+<pre class="codehilite"><code># 启动服务端
+$ python3 src/0001_request.py 0
+# 另一终端发起请求
+$ python3 src/0001_request.py 2
+http://localhost:8080/querystring?key1=val1&amp;key2=val2
+http://localhost:8080/querystring?key1=val1&amp;key2=val2&amp;key2=val3
+http://localhost:8080/querystring?key+1=val</code></pre>
+
+
+<h2 id="_5">响应内容和状态码</h2>
+<blockquote>
+<p>从响应中可以得到服务器返回的状态码和响应内容等信息</p>
+</blockquote>
+<pre class="codehilite"><code>async with session.get('http://localhost:8080') as response:
+    # 状态码
+    print('status: %s' % response.status)
+    # 响应内容
+    html = await response.text()
+    print(html)</code></pre>
+
+
+<blockquote>
+<p>如果读取响应内容乱码，可以指定响应内容的编码方式</p>
+</blockquote>
+<pre class="codehilite"><code>await response.text(encoding='gbk')</code></pre>
+
+
+<blockquote>
+<p>如果响应内容是二进制文件，使用<code>read()</code>方法读取响应内容</p>
+</blockquote>
+<pre class="codehilite"><code>await response.read()</code></pre>
+
+
+<h2 id="json">JSON请求和响应</h2>
+<h3 id="_6">请求</h3>
+<blockquote>
+<p><code>request()</code>, <code>ClientSession.get()</code>, <code>ClientSesssion.post()</code>等请求方法中可以添加<code>JSON</code>参数</p>
+</blockquote>
+<pre class="codehilite"><code>async with aiohttp.ClientSession() as session:
+    async with session.post('http://localhost:8080', json={'test': 'object'}) as response:</code></pre>
+
+
+<blockquote>
+<p>服务器断添加<code>post</code>请求路由，并打印接收到的<code>JSON</code>参数</p>
+</blockquote>
+<pre class="codehilite"><code>def server():
+    async def json_req_rsp(request):
+        print(await request.json())
+        # 响应返回
+        rep = web.Response(body=json.dumps({'status': 'ok'}, ensure_ascii=False, default=lambda o: o.__dict__).encode('utf-8'))
+        rep.content_type = 'text/json;charset=utf-8'
+        return rep
+    app = web.Application()
+    app.add_routes([web.post('/', handle)])
+    web.run_app(app)</code></pre>
+
+
+<blockquote>
+<p>默认情况会使用<code>python</code>的标准<code>json</code>模块进行序列化。也有可能使用不同序列化的<code>serializer.ClientSession</code>接收<code>json_serialize</code>参数</p>
+</blockquote>
+<pre class="codehilite"><code>import ujson
+async with aiohttp.ClientSession(json_serialize=ujson.dumps) as session:
+    async with session.post('http://localhost:8080', json={'test': 'object'}) as response:</code></pre>
+
+
+<blockquote>
+<p>ujson库比标准json更快，但稍微不兼容。</p>
+</blockquote>
+<h3 id="_7">响应</h3>
+<blockquote>
+<p><code>response</code>有一个内置的JSON解码器，可以处理<code>JSON</code>数据</p>
+</blockquote>
+<pre class="codehilite"><code>jsonobj = await response.json()</code></pre>
+
+
+<blockquote>
+<p>如果JSON解码器解码失败，<code>json()</code>函数会抛出异常，可以为<code>json()</code>函数指定自定义的编码和解码函数。</p>
+</blockquote>
+<pre class="codehilite"><code>try:
+    jsonobj = await response.json()
+    print(jsonobj)
+except Exception as e:
+    print('exception: %s' % e)
+    print('===================================')
+    print('status: %s' % response.status)
+    html = await response.text()
+    print(html)</code></pre>
+
+
+<blockquote>
+<p><code>json()</code>函数会将整个响应体读入内存，如果读取的是较大的数据，建议使用流式响应函数</p>
+</blockquote>
+<h3 id="_8">测试</h3>
+<pre class="codehilite"><code># 启动服务端
+$ python3 src/0001_request.py 0
+{'test': 'object'}
+
+# 另一终端发起请求
+$ python3 src/0001_request.py 3
+status: 200
+exception: 0, message='Attempt to decode JSON with unexpected mimetype: text/json;charset=utf-8'
+===================================
+status: 200
+{&quot;status&quot;: &quot;ok&quot;}</code></pre>
+
+
+<h2 id="_9">响应流</h2>
+<blockquote>
+<p><code>read()</code>, <code>json()</code>, <code>text()</code>等方法会把响应内容全部读入内存，如果响应内容太大容易造成内存溢出</p>
+<p>使用响应<code>ClientResponse</code>对象的<code>content</code>属性可以分块读入响应流。<code>content</code>属性是<code>aiohttp.StreamReader</code>类的实例</p>
+</blockquote>
+<pre class="codehilite"><code>async with session.get('http://localhost:8080') as response:
+    print('status: %s' % response.status)
+    size = 1024
+    with open('./tmp/localhost.html', 'wb') as file:
+        while True:
+            chunk = await response.content.read(size)
+            if not chunk:
+                break
+            print(chunk)
+            file.write(chunk)</code></pre>
+
+
+<h2 id="post">POST请求</h2>
+<h3 id="form-data">form-data</h3>
+<blockquote>
+<p>如果要类似<code>HTML</code>表单那样发送表单数据，将一个<code>dict</code>赋值给<code>data</code>参数即可。</p>
+</blockquote>
+<pre class="codehilite"><code>data={'key1': 'val1', 'key2': 'val2'}
+async with session.post('http://localhost:8080', data=data) as response:</code></pre>
+
+
+<blockquote>
+<p>传入的<code>dict</code>将在请求完成时自动进行表格编码。</p>
+</blockquote>
+<pre class="codehilite"><code>{
+  ...
+  &quot;form&quot;: {
+    &quot;key2&quot;: &quot;value2&quot;,
+    &quot;key1&quot;: &quot;value1&quot;
+  },
+  ...
+}</code></pre>
+
+
+<h3 id="_10">字节</h3>
+<blockquote>
+<p>如果需要发送的请求数据不是不是表单编码的，可以将数据以字节的形式赋值给<code>data</code>参数。传入的数据会被直接发送，并且将<code>Content-Type</code>默认设置为<code>application/octet-stream</code></p>
+</blockquote>
+<pre class="codehilite"><code>data=b&quot;{'key1': 'val1', 'key2': 'val2'}&quot;
+async with session.post('http://localhost:8080', data=data) as response:</code></pre>
+
+
+<h3 id="json_1">json</h3>
+<blockquote>
+<p>如果需要发送的数据是<code>json</code>数据，可以将<code>json</code>数据赋值给<code>json</code>参数</p>
+</blockquote>
+<pre class="codehilite"><code>data={'key1': 'val1', 'key2': 'val2'}
+async with session.post('http://localhost:8080', json=data) as response:</code></pre>
+
+
+<h3 id="_11">字符</h3>
+<blockquote>
+<p>将字符数据赋值给参数<code>text</code>, 可以发送字符数据</p>
+</blockquote>
+<pre class="codehilite"><code>data=&quot;{'key1': 'val1', 'key2': 'val2'}&quot;
+async with session.post('http://localhost:8080', text=data) as response:</code></pre>
+
+
+<h3 id="multipart-encoded-file">多编码文件(<code>Multipart-Encoded File</code>)</h3>
+<blockquote>
+<p>上传多编码文件,将文件对象赋值给<code>data</code>参数，<code>aiohttp</code>会自动将文件发送到服务器</p>
+</blockquote>
+<pre class="codehilite"><code>data={'file': open(path, 'rb')}
+await session.post('http://localhost:8080', data=data)</code></pre>
+
+
+<blockquote>
+<p>使用<code>FormData</code>对象，设置<code>filename</code>和<code>content-type</code></p>
+</blockquote>
+<pre class="codehilite"><code>data = FormData()
+data.add_field('file', open(path, 'rb'), filename='xxx.xls', content-type='application/vnd.ms-excel')
+await session.post('http://localhost:8080', data=data)</code></pre>
+
+
+<h2 id="_12">流式上传</h2>
+<blockquote>
+<p><code>aiohttp</code>支持多种流式上传，上传大文件可以不用读入内存。</p>
+</blockquote>
+<pre class="codehilite"><code>with open(path, 'rb') as file:
+    await session.post(url, data=file)</code></pre>
+
+
+<h2 id="websockets">websockets</h2>
+<blockquote>
+<p><code>aiohttp.ClientSession.ws_connect()</code>获取<code>ClientWebSocketResponse</code>对象 -- <code>websocket</code>连接</p>
+</blockquote>
+<pre class="codehilite"><code>async with session.ws_connect('http://example.org/ws') as ws:
+    async for msg in ws:
+        if msg.type == aiohttp.WSMsgType.TEXT:
+            if msg.data == 'close cmd':
+                await ws.close()
+                break
+            else:
+                await ws.send_str(msg.data + '/answer')
+        elif msg.type == aiohttp.WSMsgType.ERROR:
+            break</code></pre>
+
+
+<blockquote>
+<p>使用<code>await ws.receive()</code>或者<code>async for msg in ws</code>读取<code>websocket</code>任务</p>
+<p><code>await ws.send_str('data')</code>写入<code>websocket</code>任务</p>
+</blockquote>
+<h2 id="_13">超时</h2>
+<blockquote>
+<p>超时设置储存在<code>ClientTimeout</code>数据结构中，<code>aiohttp</code>默认的超时时间是5分钟</p>
+<p>设置<code>ClientSession</code>的<code>timeout</code>参数可以设置超时时间</p>
+</blockquote>
+<pre class="codehilite"><code>timeout = aiohttp.ClientTimeout(total=60)
+async with aiohttp.ClientSession(timeout=timeout) as session:</code></pre>
+
+
+<blockquote>
+<p><code>ClientSession.get()</code>方法也可以设置超时时间</p>
+</blockquote>
+<pre class="codehilite"><code>timeout = aiohttp.ClientTimeout(total=60)
+async with aiohttp.ClientSession(timeout=timeout) as session:
+    async with session.get(url, timeout=timeout) as resp:</code></pre>
+
+
+<blockquote>
+<p>默认的超时对象</p>
+</blockquote>
+<pre class="codehilite"><code>aiohttp.ClientTimeout(total=5*60, connect=None,
+                      sock_connect=None, sock_read=None)</code></pre>
+
+
+<ul>
+<li>
+<p><code>total</code>: 整个操作时间包括连接建立，请求发送和响应读取</p>
+</li>
+<li>
+<p><code>connect</code>: 从池中获取连接的总超时时间。时间包括建立新连接的连接或等待池中的空闲连接</p>
+</li>
+<li>
+<p><code>sock_connect</code>: 新建连接的超时时间，而不是从连接池中取</p>
+</li>
+<li>
+<p><code>sock_read</code>: 最大允许读取超时时间</p>
+</li>
+</ul>
+<hr />
+<h1 id="_14">客户端高级应用</h1>
+<h2 id="clientsession">ClientSession</h2>
+<blockquote>
+<p><code>ClientSession</code>是客户端<code>API</code>核心部分。</p>
+<p>首先创建<code>session</code>，使用该实例执行<code>HTTP</code>请求和初始化<code>WebSocket</code>连接</p>
+<p><code>session</code>包含<code>cookie</code>存储和连接池，因此同一个<code>session</code>中<code>HTTP</code>请求的<code>cookie</code>和连接是共享的</p>
+</blockquote>
+<h2 id="_15">自定义请求头</h2>
+<blockquote>
+<p>通过将一个包含请求头信息的<code>dict</code>赋值给<code>headers</code>参数</p>
+</blockquote>
+<pre class="codehilite"><code>url = 'http://example.com/image'
+payload = b'GIF89a\x01\x00\x01\x00\x00\xff\x00,\x00\x00'
+          b'\x00\x00\x01\x00\x01\x00\x00\x02\x00;'
+headers = {'content-type': 'image/gif'}
+
+await session.post(url, data=payload, headers=headers)</code></pre>
+
+
+<h2 id="cookies">自定义cookies</h2>
+<blockquote>
+<p>创建<code>session</code>时，将<code>cookies</code>信息以<code>dict</code>的形式赋值给<code>cookies</code>参数</p>
+</blockquote>
+<pre class="codehilite"><code>url = 'http://httpbin.org/cookies'
+cookies = {'cookies_are': 'working'}
+async with ClientSession(cookies=cookies) as session:
+    async with session.get(url) as resp:
+        assert await resp.json() == {
+           &quot;cookies&quot;: {&quot;cookies_are&quot;: &quot;working&quot;}}</code></pre>
+
+
+<h2 id="response">Response中信息</h2>
+<h3 id="headers">headers</h3>
+<blockquote>
+<p><code>response.headers</code>的值是<code>dict</code>形式的<code>headers</code></p>
+</blockquote>
+<pre class="codehilite"><code>assert resp.headers == {
+    'ACCESS-CONTROL-ALLOW-ORIGIN': '*',
+    'CONTENT-TYPE': 'application/json',
+    'DATE': 'Tue, 15 Jul 2014 16:49:51 GMT',
+    'SERVER': 'gunicorn/18.0',
+    'CONTENT-LENGTH': '331',
+    'CONNECTION': 'keep-alive'}</code></pre>
+
+
+<h3 id="cookies_1">cookies</h3>
+<blockquote>
+<p><code>response.cookies</code>的值是<code>dict</code>形式的<code>cookies</code></p>
+</blockquote>
+<pre class="codehilite"><code>url = 'http://example.com/some/cookie/setting/url'
+async with session.get(url) as resp:
+    print(resp.cookies['example_cookie_name'])</code></pre>
+
+
+<h3 id="_16">转发历史</h3>
+<blockquote>
+<p>如果请求是转发的，可以通过<code>response.history</code>得到转发信息</p>
+</blockquote>
+<pre class="codehilite"><code>resp = await session.get('http://example.com/some/redirect/')
+assert resp.status == 200
+assert resp.url = URL('http://example.com/some/other/url/')
+assert len(resp.history) == 1
+assert resp.history[0].status == 301
+assert resp.history[0].url = URL(
+    'http://example.com/some/redirect/')</code></pre>
+
+
+<hr />
+<h1 id="_17">服务端</h1>
+<pre class="codehilite"><code>def server():
+    async def handle(request):
+        name = request.match_info.get('name', 'shadaileng')
+        text = &quot;hello, %s&quot; % name
+        return web.Response(text=text)
+    app = web.Application()
+    app.add_routes([web.get('/', handle), web.get('/{name}', handle)])
+    web.run_app(app)</code></pre>
+
+
+<blockquote>
+<p>执行服务端程序，监听<code>8080</code>端口，根据请求返回结果</p>
+</blockquote>
+<pre class="codehilite"><code># 启动服务端
+$ python3 src/0001_request.py 1
+======== Running on http://0.0.0.0:8080 ========
+(Press CTRL+C to quit)</code></pre>
+	</article>
+			</div>
+		</div>
 	</body>
 </html>
 		
