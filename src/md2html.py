@@ -12,6 +12,7 @@ __author__ = "Shadaileng"
 
 import markdown, time, sys, os
 
+'''
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -38,10 +39,11 @@ def start_watch(path, callback):
 	except KeyboardInterrupt:
 		observer.stop()
 	observer.join()
-
+'''
 
 
 def md2html(path):
+	print('load markdown: %s' % path)
 	text = ''
 	with open(path, 'rb') as file:
 		text = file.read().decode("UTF-8")
@@ -124,7 +126,9 @@ def md2html(path):
 </html>
 		'''
 		ret = markdown.markdown(text,extensions=exts)
-		with open('./dist/' + os.path.basename(path)[:-2]  + 'html', 'wb') as file:
+		dist = './dist/' + os.path.basename(path)[:-2]  + 'html'
+		print('write to: %s' % dist)
+		with open(dist, 'wb') as file:
 			file.write((html % (os.path.basename(path), ret)).encode('utf-8'))
 #		print(html % ret)
 
@@ -135,7 +139,7 @@ _usage = '''
 if __name__ == '__main__':
 	print(__doc__ % __author__)
 	argv = sys.argv[1:]
-	print(argv)
+#	print(argv)
 	if len(argv) < 1:
 		print(_usage)
 	else:
